@@ -172,7 +172,9 @@ public class PreviewSurfaceRenderer {
                 widgetHostId,
                 layoutXml,
                 mWorkspacePageId,
-                bundle.getBoolean(KEY_WORKSPACE_ITEMS_LABELS_HIDDEN, false)
+                bundle.getBoolean(
+                        KEY_WORKSPACE_ITEMS_LABELS_HIDDEN,
+                        !LauncherPrefs.SHOW_DESKTOP_LABELS.get(context))
         );
 
         mViewRoot = new FrameLayout(mPreviewContext);

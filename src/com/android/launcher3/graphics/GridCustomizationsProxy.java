@@ -136,6 +136,11 @@ public class GridCustomizationsProxy implements ProxyProvider {
     private static final String SET_WORKSPACE_ITEMS_LABEL_HIDDEN =
             "/set_workspace_items_label_hidden";
     public static final String WORKSPACE_ITEMS_LABEL_HIDDEN = "/workspace_items_label_hidden";
+    private static final String GET_DRAWER_ITEMS_LABEL_HIDDEN =
+            "/get_drawer_items_label_hidden";
+    private static final String SET_DRAWER_ITEMS_LABEL_HIDDEN =
+            "/set_drawer_items_label_hidden";
+    public static final String DRAWER_ITEMS_LABEL_HIDDEN = "/drawer_items_label_hidden";
     public static final String BOOLEAN_VALUE = "boolean_value";
 
     private static final String KEY_SURFACE_PACKAGE = "surface_package";
@@ -255,15 +260,21 @@ public class GridCustomizationsProxy implements ProxyProvider {
                 return cursor;
             }
             case GET_WORKSPACE_ITEMS_LABEL_HIDDEN:
-            case WORKSPACE_ITEMS_LABEL_HIDDEN:
-                if (!com.android.systemui.shared.Flags.workspaceItemsLabelHidden()) {
-                    return null;
-                }
+            case WORKSPACE_ITEMS_LABEL_HIDDEN: {
                 MatrixCursor cursor = new MatrixCursor(new String[]{BOOLEAN_VALUE});
                 boolean isWorkspaceItemsLabelHidden =
-                        mPrefs.get(LauncherPrefs.WORKSPACE_ITEMS_LABEL_HIDDEN);
+                        !mPrefs.get(LauncherPrefs.SHOW_DESKTOP_LABELS);
                 cursor.newRow().add(BOOLEAN_VALUE, isWorkspaceItemsLabelHidden ? 1 : 0);
                 return cursor;
+            }
+            case GET_DRAWER_ITEMS_LABEL_HIDDEN:
+            case DRAWER_ITEMS_LABEL_HIDDEN: {
+                MatrixCursor cursor = new MatrixCursor(new String[]{BOOLEAN_VALUE});
+                boolean isDrawerItemsLabelHidden =
+                        !mPrefs.get(LauncherPrefs.SHOW_DRAWER_LABELS);
+                cursor.newRow().add(BOOLEAN_VALUE, isDrawerItemsLabelHidden ? 1 : 0);
+                return cursor;
+            }
             default: {
                 Log.d(TAG, "query: path=" + path + " not found, returning null.");
                 return null;
@@ -328,9 +339,22 @@ public class GridCustomizationsProxy implements ProxyProvider {
                 return UPDATE_SETTING_SUCCESS;
             }
             case SET_WORKSPACE_ITEMS_LABEL_HIDDEN: {
+                boolean isHidden = values.getAsBoolean(BOOLEAN_VALUE);
                 mPrefs.put(
                         LauncherPrefs.WORKSPACE_ITEMS_LABEL_HIDDEN,
-                        values.getAsBoolean(BOOLEAN_VALUE)
+                        isHidden
+                );
+                mPrefs.put(
+                        LauncherPrefs.SHOW_DESKTOP_LABELS,
+                        !isHidden
+                );
+                return UPDATE_SETTING_SUCCESS;
+            }
+            case SET_DRAWER_ITEMS_LABEL_HIDDEN: {
+                boolean isHidden = values.getAsBoolean(BOOLEAN_VALUE);
+                mPrefs.put(
+                        LauncherPrefs.SHOW_DRAWER_LABELS,
+                        !isHidden
                 );
                 return UPDATE_SETTING_SUCCESS;
             }
